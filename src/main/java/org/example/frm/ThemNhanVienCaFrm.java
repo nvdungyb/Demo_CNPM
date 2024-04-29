@@ -48,27 +48,24 @@ public class ThemNhanVienCaFrm extends JFrame {
         table1 = new JTable();
 
         selectButton = new JButton("Chọn");
-        selectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LocalDate monday = ctr.getFirstDayOfWeek().plusDays(row);
+        selectButton.addActionListener(e -> {
+            LocalDate monday = ctr.getFirstDayOfWeek().plusDays(row);
 
-                int[] selectedRows = table1.getSelectedRows();
-                if (selectedRows.length != 0) {
-                    for (int i : selectedRows) {
-                        NhanVien nhanVien = nhanVienMap.get(i);
-                        NhanVienCa nhanVienCa = new NhanVienCa(nhanVien, caMap);
-                        ctr.themNhanVienCa(nhanVienCa);
-                    }
-
-                    System.out.println(ctr.getDsNhanVienCa());
+            int[] selectedRows = table1.getSelectedRows();
+            if (selectedRows.length != 0) {
+                for (int i : selectedRows) {
+                    NhanVien nhanVien = nhanVienMap.get(i);
+                    NhanVienCa nhanVienCa = new NhanVienCa(nhanVien, caMap);
+                    ctr.themNhanVienCa(nhanVienCa);
                 }
-                // Cập nhật lại danh sách nhân viên ca đăng kí.
-                ctr.updateDsNhanVienCaDangKi(caMap);
-                setVisible(false);
-                LenLichLamFrm lenLichLamFrm = new LenLichLamFrm();
-                lenLichLamFrm.setVisible(true);
+
+                System.out.println(ctr.getDsNhanVienCa());
             }
+            // Cập nhật lại danh sách nhân viên ca đăng kí.
+            ctr.updateDsNhanVienCaDangKi(caMap);
+            setVisible(false);
+            LenLichLamFrm lenLichLamFrm = new LenLichLamFrm();
+            lenLichLamFrm.setVisible(true);
         });
 
         setTitle("ThemNhanVienCaFrm");
@@ -141,14 +138,6 @@ public class ThemNhanVienCaFrm extends JFrame {
             caMap = nhanVienCaDangKi.getCa();
             model.addRow(new Object[]{nhanVien.getName(), nhanVien.getSodt(), nhanVien.getSoGioLenLich()});
         }
-    }
-
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    public void setCol(int col) {
-        this.col = col;
     }
 
     public void formClosing() {

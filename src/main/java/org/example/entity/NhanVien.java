@@ -26,6 +26,11 @@ public class NhanVien extends Employee {
         return manv;
     }
 
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+    }
+
     public String toString() {
         return "Name: " + getName() + ", Phone: " + getSodt() + ", Employee ID: " + getManv();
     }

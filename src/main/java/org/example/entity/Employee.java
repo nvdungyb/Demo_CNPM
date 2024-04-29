@@ -32,4 +32,8 @@ public class Employee {
     public int getNhaHangId() {
         return nhaHangid;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

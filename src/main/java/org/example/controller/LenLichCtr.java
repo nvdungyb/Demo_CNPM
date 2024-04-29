@@ -129,6 +129,7 @@ public class LenLichCtr {
                 String sodt = resultSet.getString("sodt");
 
                 NhanVien nhanVien = new NhanVien(name, sodt, manv);
+                nhanVien.setId(nhanVienId);
                 if (dsNhanVien.containsKey(manv)) {
                     nhanVien = dsNhanVien.get(manv);
                     nhanVien.setSoGioLenLich(nhanVien.getSoGioLenLich() + 8);
@@ -224,4 +225,53 @@ public class LenLichCtr {
         System.out.println(dsNhanVienCaDangKi.get(ca.getNgay()).size());
     }
 
+    public boolean taoLichLamViec() {
+        LocalDate start = getFirstDayOfWeek();
+        LocalDate end = getLastDayOfWeek().plusDays(1);
+        while (start.isBefore(end)) {
+            if (!dsNhanVienCa.containsKey(start)) {
+                return false;
+            }
+            start = start.plusDays(1);
+        }
+
+        try {
+            connection.setAutoCommit(false);
+            String sql = "INSERT INTO demoBTL.lichlamviec (ngaybatdau, ngayketthuc, quanliid, nhahangid) VALUES (?, ?, ?, ?)";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setDate(1, Date.valueOf(start));
+            preparedStatement.setDate(2, Date.valueOf(end.minusDays(1)));
+            preparedStatement.setInt(3, 24);
+            preparedStatement.setInt(4, 1);
+
+            preparedStatement.executeUpdate();
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            int idLichLamViec = 0;
+            if (generatedKeys.next()) {
+                idLichLamViec = generatedKeys.getInt(1);
+            }
+            for (LocalDate date = getFirstDayOfWeek(); date.isBefore(getLastDayOfWeek().plusDays(1)); date = date.plusDays(1)) {
+                for (NhanVienCa nhanVienCa : dsNhanVienCa.get(date)) {
+                    sql = "INSERT INTO demoBTL.nhanvienca (nhanvienid, caid, lichlamviecid) VALUES (?, ?, ?)";
+                    preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setInt(1, nhanVienCa.getNhanVien().getId());
+                    preparedStatement.setInt(2, nhanVienCa.getCa().getId());
+                    preparedStatement.setInt(3, idLichLamViec);
+                    preparedStatement.executeUpdate();
+                }
+            }
+
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
+        }
+
+        return true;
+    }
 }

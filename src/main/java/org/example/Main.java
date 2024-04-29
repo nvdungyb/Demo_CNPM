@@ -5,6 +5,7 @@ import org.example.controller.StaticResouce;
 import org.example.entity.NhanVienCaDangKi;
 import org.example.frm.LenLichLamFrm;
 import org.example.frm.ThemNhanVienCaFrm;
+import org.example.frm.TrangChuFrm;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class Main {
 //        themNhanVienCaFrm.setVisible(true);
 
         StaticResouce staticResouce = new StaticResouce();
-        LenLichLamFrm lenLichLamFrm = new LenLichLamFrm();
+        TrangChuFrm trangChuFrm = new TrangChuFrm();
 
     }
 

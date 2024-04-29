@@ -21,4 +21,8 @@ public class NhanVienCa {
     public String toString() {
         return "Employee: " + nhanVien.getName() + ", Date: " + ca.getNgay();
     }
+
+    public int getNhanVienId(){
+        return nhanVien.getId();
+    }
 }

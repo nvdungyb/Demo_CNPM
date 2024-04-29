@@ -5,10 +5,7 @@ import org.example.entity.NhanVienCa;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,13 +17,13 @@ public class LenLichLamFrm extends JFrame {
     private JPanel contentPanel;
     private JScrollPane scrollPane1;
     private JTable table2;
-    private int row;
-    private int column;
+    private JButton addButton;
     private ThemNhanVienCaFrm themNhanVienCaFrm;
 
     public LenLichLamFrm() {
         initComponents();
         initData();
+        formClosing();
     }
 
     private void initComponents() {
@@ -35,8 +32,23 @@ public class LenLichLamFrm extends JFrame {
         scrollPane1 = new JScrollPane();
         table2 = new JTable();
 
+        addButton = new JButton("Tạo lịch làm việc tuần tới");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addButton);
+
         // Thiết lập layout cho dialogPane là BorderLayout
         dialogPane.setLayout(new BorderLayout());
+        dialogPane.add(buttonPanel, BorderLayout.SOUTH);
+        addButton.addActionListener(e -> {
+            boolean isSaved = ctr.taoLichLamViec();
+            if (isSaved) {
+                JFrame thisFrame = (JFrame) SwingUtilities.getWindowAncestor(addButton);
+                thisFrame.setVisible(false);
+                JOptionPane.showMessageDialog(new TrangChuFrm(), "Tạo lịch làm việc thành công");
+            } else {
+                JOptionPane.showMessageDialog(null, "Tạo lịch làm việc thất bại");
+            }
+        });
 
         var contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -52,7 +64,7 @@ public class LenLichLamFrm extends JFrame {
 
                 // Thêm dữ liệu vào model (7 dòng)
                 for (int i = 0; i < 7; i++) {
-                    model.addRow(new Object[]{"ca", "ca"});
+                    model.addRow(new Object[]{null, null});
                 }
 
                 // Đặt kích thước cố định cho cột (nếu cần)
@@ -150,6 +162,16 @@ public class LenLichLamFrm extends JFrame {
         contentPanel.setPreferredSize(new Dimension(width, height));
         dialogPane.revalidate();
         dialogPane.repaint();
+    }
+
+    public void formClosing() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                TrangChuFrm trangChuFrm = new TrangChuFrm();
+                trangChuFrm.setVisible(true);
+            }
+        });
     }
 
 }

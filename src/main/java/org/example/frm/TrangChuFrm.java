@@ -5,10 +5,25 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class TrangChuFrm extends JFrame {
+    private JPanel dialogPane;
+    private JPanel contentPanel;
+    private JLabel label1;
+    private JButton button1;
+    private JButton button2;
+    private JButton button3;
+    private JButton button4;
+    private JButton button5;
+    private JButton button6;
+    private JButton button7;
+    private JPanel buttonBar;
+
     public TrangChuFrm() {
         initComponents();
+        exits();
     }
 
     private void initComponents() {
@@ -35,6 +50,17 @@ public class TrangChuFrm extends JFrame {
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
             dialogPane.setLayout(new BorderLayout());
+
+            button5.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    LenLichLamFrm lenlichlamFrm = new LenLichLamFrm();
+                    lenlichlamFrm.setVisible(true);
+
+                    Frame frame = (Frame) SwingUtilities.getWindowAncestor(dialogPane);
+                    frame.setVisible(false);
+                }
+            });
 
             //======== contentPanel ========
             {
@@ -115,17 +141,17 @@ public class TrangChuFrm extends JFrame {
         contentPane.add(dialogPane, BorderLayout.CENTER);
         pack();
         setLocationRelativeTo(getOwner());
+
+        setVisible(true);
     }
 
-    private JPanel dialogPane;
-    private JPanel contentPanel;
-    private JLabel label1;
-    private JButton button1;
-    private JButton button2;
-    private JButton button3;
-    private JButton button4;
-    private JButton button5;
-    private JButton button6;
-    private JButton button7;
-    private JPanel buttonBar;
+    public void exits() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                System.exit(0);
+            }
+        });
+    }
 }
