@@ -4,7 +4,7 @@ public class StaticResouce {
     public static LenLichCtr ctr = new LenLichCtr();
 
     public StaticResouce() {
-        ctr.listNhanVienDangKi();
+        ctr.getDanhSachNhanVienDangKi();
     }
 
 }

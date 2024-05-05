@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import static org.example.controller.StaticResouce.ctr;
+
 public class TrangChuFrm extends JFrame {
     private JPanel dialogPane;
     private JPanel contentPanel;
@@ -54,8 +56,7 @@ public class TrangChuFrm extends JFrame {
             button5.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    LenLichLamFrm lenlichlamFrm = new LenLichLamFrm();
-                    lenlichlamFrm.setVisible(true);
+                    ctr.showLenLichLamFrm();
 
                     Frame frame = (Frame) SwingUtilities.getWindowAncestor(dialogPane);
                     frame.setVisible(false);

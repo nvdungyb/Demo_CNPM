@@ -1,19 +1,29 @@
 package org.example.controller;
 
 import org.example.entity.*;
+import org.example.frm.LenLichLamFrm;
+import org.example.frm.ThemNhanVienCaFrm;
+import org.example.frm.ThongBaoFrm;
+import org.example.frm.TrangChuFrm;
 
+import javax.swing.*;
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
+
+import static org.example.controller.StaticResouce.ctr;
 
 public class LenLichCtr {
     private static Connection connection;
     private HashMap<LocalDate, ArrayList<NhanVienCaDangKi>> dsNhanVienCaDangKi = new HashMap<>();
     private HashMap<String, NhanVien> dsNhanVien = new HashMap<>();
     private HashMap<LocalDate, ArrayList<NhanVienCa>> dsNhanVienCa = new HashMap<>();
+
+    private LenLichLamFrm lenLichLamFrm;
+    private ThemNhanVienCaFrm themNhanVienCaFrm;
+    private ThongBaoFrm thongBaoFrm;
+    private boolean isSaved;
 
     public static Connection getConnection() {
         String url = "jdbc:mysql://localhost:3306/demoBTL";
@@ -108,7 +118,7 @@ public class LenLichCtr {
         }
     }
 
-    public void listNhanVienDangKi() {
+    public void getDanhSachNhanVienDangKi() {
         try {
             connection = getConnection();
             String sql = "SELECT nhanvienid, manv, name, sodt, caid, buoi, ngay " +
@@ -156,38 +166,6 @@ public class LenLichCtr {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public LocalDate getFirstDayOfWeek() {
-        Calendar calendar = Calendar.getInstance();
-
-        int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
-        // Tính toán để tìm ngày thứ 2 gần nhất
-        while (currentDayOfWeek != Calendar.MONDAY) {
-            // Di chuyển đến ngày tiếp theo
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-            currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        }
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1; // Tháng bắt đầu từ 0
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-
-        return LocalDate.of(year, month, dayOfMonth);
-    }
-
-    public LocalDate getLastDayOfWeek() {
-        LocalDate date = getFirstDayOfWeek();
-        return date.plusDays(6);
-    }
-
-    public HashMap<LocalDate, ArrayList<NhanVienCaDangKi>> getDsNhanVienCaDangKi() {
-        return dsNhanVienCaDangKi;
-    }
-
-    public HashMap<LocalDate, ArrayList<NhanVienCa>> getDsNhanVienCa() {
-        return dsNhanVienCa;
     }
 
     public void themNhanVienCa(NhanVienCa nhanVienCa) {
@@ -240,7 +218,7 @@ public class LenLichCtr {
             String sql = "INSERT INTO demoBTL.lichlamviec (ngaybatdau, ngayketthuc, quanliid, nhahangid) VALUES (?, ?, ?, ?)";
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setDate(1, Date.valueOf(start));
+            preparedStatement.setDate(1, Date.valueOf(getFirstDayOfWeek()));
             preparedStatement.setDate(2, Date.valueOf(end.minusDays(1)));
             preparedStatement.setInt(3, 24);
             preparedStatement.setInt(4, 1);
@@ -273,5 +251,89 @@ public class LenLichCtr {
         }
 
         return true;
+    }
+
+    public void showLenLichLamFrm() {
+        lenLichLamFrm = new LenLichLamFrm();
+        lenLichLamFrm.setVisible(true);
+    }
+
+    public void showThemNhanVienCaFrm(int row, int col) {
+        this.lenLichLamFrm.setVisible(false);
+        this.themNhanVienCaFrm = new ThemNhanVienCaFrm(row, col);
+        this.themNhanVienCaFrm.setVisible(true);
+    }
+
+    public void chonNhanVien(int row, int[] selectedRows, Map<Integer, NhanVien> nhanVienMap, Ca caMap) {
+        LocalDate monday = ctr.getFirstDayOfWeek().plusDays(row);
+
+        if (selectedRows.length != 0) {
+            for (int i : selectedRows) {
+                NhanVien nhanVien = nhanVienMap.get(i);
+                NhanVienCa nhanVienCa = new NhanVienCa(nhanVien, caMap);
+                ctr.themNhanVienCa(nhanVienCa);
+            }
+
+            System.out.println(ctr.getDsNhanVienCa());
+        }
+        // Cập nhật lại danh sách nhân viên ca đăng kí.
+        ctr.updateDsNhanVienCaDangKi(caMap);
+
+        this.themNhanVienCaFrm.setVisible(false);
+        lenLichLamFrm = new LenLichLamFrm();
+        lenLichLamFrm.setVisible(true);
+    }
+
+    public void lenLichLam() {
+        isSaved = ctr.taoLichLamViec();
+        thongBaoFrm = new ThongBaoFrm();
+        thongBaoFrm.setVisible(true);
+        if (isSaved) {
+            thongBaoFrm.setTextLabel("Tạo lịch làm việc thành công!");
+        } else {
+            thongBaoFrm.setTextLabel("Tạo lịch làm việc thất bại!");
+        }
+    }
+
+    public void handleClicked() {
+        thongBaoFrm.setVisible(false);
+
+        if (isSaved) {
+            lenLichLamFrm.setVisible(false);
+            TrangChuFrm trangChuFrm = new TrangChuFrm();
+            trangChuFrm.setVisible(true);
+        }
+    }
+
+    public LocalDate getFirstDayOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+
+        int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        // Tính toán để tìm ngày thứ 2 gần nhất
+        while (currentDayOfWeek != Calendar.MONDAY) {
+            // Di chuyển đến ngày tiếp theo
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        }
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1; // Tháng bắt đầu từ 0
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        return LocalDate.of(year, month, dayOfMonth);
+    }
+
+    public LocalDate getLastDayOfWeek() {
+        LocalDate date = getFirstDayOfWeek();
+        return date.plusDays(6);
+    }
+
+    public HashMap<LocalDate, ArrayList<NhanVienCaDangKi>> getDsNhanVienCaDangKi() {
+        return dsNhanVienCaDangKi;
+    }
+
+    public HashMap<LocalDate, ArrayList<NhanVienCa>> getDsNhanVienCa() {
+        return dsNhanVienCa;
     }
 }

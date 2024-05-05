@@ -49,23 +49,7 @@ public class ThemNhanVienCaFrm extends JFrame {
 
         selectButton = new JButton("Chọn");
         selectButton.addActionListener(e -> {
-            LocalDate monday = ctr.getFirstDayOfWeek().plusDays(row);
-
-            int[] selectedRows = table1.getSelectedRows();
-            if (selectedRows.length != 0) {
-                for (int i : selectedRows) {
-                    NhanVien nhanVien = nhanVienMap.get(i);
-                    NhanVienCa nhanVienCa = new NhanVienCa(nhanVien, caMap);
-                    ctr.themNhanVienCa(nhanVienCa);
-                }
-
-                System.out.println(ctr.getDsNhanVienCa());
-            }
-            // Cập nhật lại danh sách nhân viên ca đăng kí.
-            ctr.updateDsNhanVienCaDangKi(caMap);
-            setVisible(false);
-            LenLichLamFrm lenLichLamFrm = new LenLichLamFrm();
-            lenLichLamFrm.setVisible(true);
+            ctr.chonNhanVien(row, table1.getSelectedRows(), nhanVienMap, caMap);
         });
 
         setTitle("ThemNhanVienCaFrm");
@@ -144,8 +128,7 @@ public class ThemNhanVienCaFrm extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                LenLichLamFrm lenLichLamFrm = new LenLichLamFrm();
-                lenLichLamFrm.setVisible(true);
+                ctr.showLenLichLamFrm();
             }
         });
     }

@@ -18,7 +18,6 @@ public class LenLichLamFrm extends JFrame {
     private JScrollPane scrollPane1;
     private JTable table2;
     private JButton addButton;
-    private ThemNhanVienCaFrm themNhanVienCaFrm;
 
     public LenLichLamFrm() {
         initComponents();
@@ -36,18 +35,11 @@ public class LenLichLamFrm extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
 
-        // Thiết lập layout cho dialogPane là BorderLayout
         dialogPane.setLayout(new BorderLayout());
         dialogPane.add(buttonPanel, BorderLayout.SOUTH);
         addButton.addActionListener(e -> {
-            boolean isSaved = ctr.taoLichLamViec();
-            if (isSaved) {
-                JFrame thisFrame = (JFrame) SwingUtilities.getWindowAncestor(addButton);
-                thisFrame.setVisible(false);
-                JOptionPane.showMessageDialog(new TrangChuFrm(), "Tạo lịch làm việc thành công");
-            } else {
-                JOptionPane.showMessageDialog(null, "Tạo lịch làm việc thất bại");
-            }
+
+            ctr.lenLichLam();
         });
 
         var contentPane = getContentPane();
@@ -82,10 +74,8 @@ public class LenLichLamFrm extends JFrame {
             contentPanel.setLayout(new BorderLayout());
             contentPanel.add(scrollPane1, BorderLayout.CENTER);
 
-            // Thêm contentPanel vào dialogPane ở vị trí CENTER
             dialogPane.add(contentPanel, BorderLayout.CENTER);
         }
-        // Thêm dialogPane vào contentPane ở vị trí CENTER
         contentPane.add(dialogPane, BorderLayout.CENTER);
         setTitle("LenLichLamFrm");
 
@@ -110,11 +100,8 @@ public class LenLichLamFrm extends JFrame {
                 if (row >= 0 && column >= 0) {
                     System.out.println("Click vào dòng " + row + " cột " + column);
 
-                    themNhanVienCaFrm = new ThemNhanVienCaFrm(row, column);
-                    themNhanVienCaFrm.setVisible(true);
+                    ctr.showThemNhanVienCaFrm(row, column);
 
-                    JFrame thisFrame = (JFrame) SwingUtilities.getWindowAncestor(table2);
-                    thisFrame.setVisible(false);
                 }
             }
         });
